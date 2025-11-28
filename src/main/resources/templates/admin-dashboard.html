@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airway Admin Dashboard</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard" class="active">Dashboard</a>
+            <a href="/admin/flights">Flights</a>
+            <a href="/admin/aircraft">Aircraft</a>
+            <a href="/admin/airports">Airports</a>
+            <a href="/admin/bookings">Bookings</a>
+            <a href="/admin/users">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Admin Dashboard</h1>
+            <p>Manage system resources: flights, aircraft, airports & bookings.</p>
+        </header>
+
+        <section class="panel">
+            <h2>Overview</h2>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Flights</h3>
+                    <p>Manage flight schedule and statuses.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Aircraft</h3>
+                    <p>Add, edit or remove aircraft.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Airports</h3>
+                    <p>Manage available airports and their details.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Bookings</h3>
+                    <p>View all user bookings.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

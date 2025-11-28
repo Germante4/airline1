@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Seat – Airway</title>
+    <link rel="stylesheet" href="/customer/customer.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">AIRWAY</div>
+    <nav>
+        <a href="/customer/dashboard">Home</a>
+        <a href="/customer/flights" class="active">Search Flights</a>
+        <a href="/customer/bookings">My Bookings</a>
+        <a href="/customer/profile">Profile</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </nav>
+</header>
+
+<section class="search-section">
+    <h1>Select Your Seat</h1>
+    <p>Choose one of the available seats for this flight.</p>
+</section>
+
+<section class="results-section">
+    <h2>Available Seats</h2>
+
+    <div id="seatsContainer" class="seat-grid"></div>
+
+    <button id="confirmBtn" class="btn-primary big" disabled>Confirm Booking</button>
+</section>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const flightId = urlParams.get("flightId");
+    let selectedSeat = null;
+
+    async function loadSeats() {
+        const seats = await fetch(`/tickets/by-flight/${flightId}`).then(r => r.json());
+        const booked = await fetch(`/booked-tickets/flight/${flightId}`).then(r => r.json());
+
+        const bookedSeatNumbers = booked.map(t => t.ticket.seatNumber);
+
+        const container = document.getElementById("seatsContainer");
+
+        seats.forEach(ticket => {
+            const isBooked = bookedSeatNumbers.includes(ticket.seatNumber);
+
+            const div = document.createElement("div");
+            div.className = "seat " + (isBooked ? "booked" : "available");
+            div.innerText = ticket.seatNumber;
+
+            if (!isBooked) {
+                div.onclick = () => selectSeat(ticket.seatNumber);
+            }
+
+            container.appendChild(div);
+        });
+    }
+
+    function selectSeat(seat) {
+        selectedSeat = seat;
+        document.querySelectorAll(".seat.available").forEach(s => s.classList.remove("selected"));
+        document.querySelector(`.seat.available:nth-child(${seat})`)?.classList.add("selected");
+        document.getElementById("confirmBtn").disabled = false;
+    }
+
+    document.getElementById("confirmBtn").onclick = async () => {
+        await fetch("/bookings/create", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ flightId, seatNumber: selectedSeat })
+        });
+
+        window.location.href = "/customer/bookings";
+    };
+
+    loadSeats();
+</script>
+
+<style>
+    .seat-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 60px);
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .seat {
+        padding: 15px;
+        text-align: center;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .available { background: #e8f4ff; }
+    .available:hover { background: #b8dcff; }
+    .selected { background: #1a73e8 !important; color: white; }
+    .booked { background: #dddddd; cursor: default; color: #666; }
+</style>
+
+</body>
+</html>

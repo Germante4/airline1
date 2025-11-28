@@ -1,0 +1,201 @@
+/* Main layout */
+.layout {
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: #0F1C2E;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.logo {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+}
+
+/* Sidebar navigation */
+.sidebar nav a {
+    display: block;
+    padding: 12px 18px;
+    color: #bfc8d9;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover {
+    background: #1A2A42;
+    color: #fff;
+}
+
+.sidebar nav .active {
+    background: #1A2A42;
+    color: white;
+}
+
+/* Logout button */
+.logout-box {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.logout-btn {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: #D9534F;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    opacity: 0.8;
+}
+
+/* Main content */
+.content {
+    flex: 1;
+    background: #F4F6FA;
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+
+/* Top header */
+.topbar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.topbar p {
+    margin-top: 4px;
+    color: #555;
+}
+
+/* Cards section */
+.cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.card {
+    background: white;
+    width: 250px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+/* --- PANEL SECTION --- */
+.panel {
+    background: white;
+    padding: 25px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.panel h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+/* --- FORM GRID (for Create Flight) --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-grid input,
+.form-grid select {
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.btn.primary {
+    grid-column: span 2;
+    padding: 12px;
+    background: #1A73E8;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+.btn.primary:hover {
+    background: #155BB5;
+}
+
+/* --- TABLE STYLING --- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.table th {
+    background: #eef1f6;
+    padding: 12px;
+    text-align: left;
+}
+
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table tr:hover {
+    background: #f7f9fc;
+}
+
+/* Buttons inside table */
+.btn.small {
+    padding: 6px 12px;
+    border-radius: 5px;
+    background: #1A73E8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn.small:hover {
+    background: #155BB5;
+}
+
+.btn.delete {
+    background: #D9534F;
+}
+
+.btn.delete:hover {
+    background: #B13E3A;
+}
+

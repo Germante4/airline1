@@ -10,19 +10,44 @@ import java.util.List;
 @RequestMapping("/aircraft")
 public class AircraftController {
 
-    private final AircraftRepository repository;
+    private final AircraftRepository aircraftRepository;
 
-    public AircraftController(AircraftRepository repository) {
-        this.repository = repository;
+    public AircraftController(AircraftRepository aircraftRepository) {
+        this.aircraftRepository = aircraftRepository;
     }
 
+    // CUSTOMER — view only
     @GetMapping
     public List<Aircraft> getAll() {
-        return repository.findAll();
+        return aircraftRepository.findAll();
     }
 
-    @PostMapping
+    @GetMapping("/{id}")
+    public Aircraft getOne(@PathVariable Long id) {
+        return aircraftRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aircraft not found"));
+    }
+
+    // ADMIN — full management
+    @PostMapping("/admin")
     public Aircraft create(@RequestBody Aircraft aircraft) {
-        return repository.save(aircraft);
+        return aircraftRepository.save(aircraft);
+    }
+
+    @PutMapping("/admin/{id}")
+    public Aircraft update(@PathVariable Long id, @RequestBody Aircraft updated) {
+        Aircraft aircraft = aircraftRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aircraft not found"));
+
+        aircraft.setModel(updated.getModel());
+        aircraft.setCapacity(updated.getCapacity());
+
+        return aircraftRepository.save(aircraft);
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public String delete(@PathVariable Long id) {
+        aircraftRepository.deleteById(id);
+        return "Aircraft deleted";
     }
 }

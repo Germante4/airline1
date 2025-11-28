@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Airports</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/flights">Flights</a>
+            <a href="/admin/aircraft">Aircraft</a>
+            <a href="/admin/airports" class="active">Airports</a>
+            <a href="/admin/bookings">Bookings</a>
+            <a href="/admin/users">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Manage Airports</h1>
+            <p>Add, edit and remove airports.</p>
+        </header>
+
+        <!-- CREATE / UPDATE FORM -->
+        <section class="panel">
+            <h2>Create / Update Airport</h2>
+
+            <form id="airportForm" class="form-grid">
+
+                <input type="hidden" id="airportId">
+
+                <input type="text" id="code" placeholder="Airport Code (e.g. VNO)" required>
+                <input type="text" id="name" placeholder="Airport Name" required>
+
+                <input type="text" id="city" placeholder="City" required>
+                <input type="text" id="country" placeholder="Country" required>
+
+                <input type="number" step="0.0001" id="latitude" placeholder="Latitude" required>
+                <input type="number" step="0.0001" id="longitude" placeholder="Longitude" required>
+
+                <button type="submit" class="btn primary">Save Airport</button>
+            </form>
+        </section>
+
+        <!-- AIRPORT LIST -->
+        <section class="panel">
+            <h2>All Airports</h2>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Coordinates</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="airportTableBody"></tbody>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+<!-- JS LOGIC -->
+<script>
+
+    const api = "/airport";
+
+    // ----------------------------------
+    // LOAD ALL AIRPORTS
+    // ----------------------------------
+    async function loadAirports() {
+        const data = await fetch(api).then(r => r.json());
+        const body = document.getElementById("airportTableBody");
+        body.innerHTML = "";
+
+        data.forEach(a => {
+            body.innerHTML += `
+                <tr>
+                    <td>${a.id}</td>
+                    <td>${a.code}</td>
+                    <td>${a.name}</td>
+                    <td>${a.city}, ${a.country}</td>
+                    <td>${a.latitude}, ${a.longitude}</td>
+                    <td>
+                        <button class="btn small" onclick="editAirport(${a.id})">Update</button>
+                        <button class="btn small delete" onclick="deleteAirport(${a.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // ----------------------------------
+    // EDIT AIRPORT
+    // ----------------------------------
+    async function editAirport(id) {
+        const a = await fetch(`${api}/${id}`).then(r => r.json());
+
+        document.getElementById("airportId").value = a.id;
+        document.getElementById("code").value = a.code;
+        document.getElementById("name").value = a.name;
+        document.getElementById("city").value = a.city;
+        document.getElementById("country").value = a.country;
+        document.getElementById("latitude").value = a.latitude;
+        document.getElementById("longitude").value = a.longitude;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ----------------------------------
+    // DELETE AIRPORT
+    // ----------------------------------
+    async function deleteAirport(id) {
+        if (!confirm("Delete this airport?")) return;
+
+        await fetch(`${api}/admin/${id}`, { method: "DELETE" });
+        loadAirports();
+    }
+
+    // ----------------------------------
+    // CREATE / UPDATE AIRPORT
+    // ----------------------------------
+    document.getElementById("airportForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById("airportId").value;
+
+        const dto = {
+            code: document.getElementById("code").value,
+            name: document.getElementById("name").value,
+            city: document.getElementById("city").value,
+            country: document.getElementById("country").value,
+            latitude: parseFloat(document.getElementById("latitude").value),
+            longitude: parseFloat(document.getElementById("longitude").value)
+        };
+
+        const method = id ? "PUT" : "POST";
+        const url = id ? `${api}/admin/${id}` : `${api}/admin`;
+
+        await fetch(url, {
+            method,
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(dto)
+        });
+
+        alert(id ? "Airport updated!" : "Airport created!");
+
+        document.getElementById("airportForm").reset();
+        document.getElementById("airportId").value = "";
+
+        loadAirports();
+    });
+
+    loadAirports();
+
+</script>
+
+</body>
+</html>

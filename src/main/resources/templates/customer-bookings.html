@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings – Airway</title>
+    <link rel="stylesheet" href="/customer/customer.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">AIRWAY</div>
+
+    <nav>
+        <a href="/customer/dashboard">Home</a>
+        <a href="/customer/flights">Search Flights</a>
+        <a href="/customer/bookings" class="active">My Bookings</a>
+        <a href="/customer/profile">Profile</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </nav>
+</header>
+
+
+
+<!-- HEADER SECTION -->
+<section class="search-section">
+    <h1>Your Bookings</h1>
+    <p>View, manage or cancel your existing bookings.</p>
+</section>
+
+
+
+<!-- BOOKINGS TABLE -->
+<section class="results-section">
+    <h2>Active & Past Bookings</h2>
+
+    <table class="table" id="bookingsTable">
+        <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Flight</th>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Status</th>
+            <th>Tickets</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="bookingsBody">
+        <!-- JS inserts rows -->
+        </tbody>
+    </table>
+
+</section>
+
+
+<script>
+
+    // -------------------------------
+    // LOAD CUSTOMER BOOKINGS
+    // -------------------------------
+    async function loadBookings() {
+
+        const bookings = await fetch('/bookings/customer').then(r => r.json());
+        const body = document.getElementById("bookingsBody");
+
+        if (bookings.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="7" class="no-results">
+                        You have no bookings yet.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        body.innerHTML = bookings.map(b => `
+            <tr>
+                <td>#${b.id}</td>
+
+                <td>${b.bookedTickets[0].ticket.flight.flightNumber}</td>
+
+                <td>
+                    ${b.bookedTickets[0].ticket.flight.originAirport.code}
+                    →
+                    ${b.bookedTickets[0].ticket.flight.destinationAirport.code}
+                </td>
+
+                <td>
+                    ${b.bookedTickets[0].ticket.flight.departureTime}
+                </td>
+
+                <td>${b.status}</td>
+
+                <td>${b.bookedTickets.length}</td>
+
+                <td>
+                    <button class="btn-book" onclick="openBooking(${b.id})">View</button>
+                    <button class="btn-cancel" onclick="cancelBooking(${b.id})">Cancel</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+
+
+    // -------------------------------
+    // CANCEL BOOKING
+    // -------------------------------
+    async function cancelBooking(id) {
+        if (!confirm("Cancel this booking?")) return;
+
+        await fetch(`/bookings/${id}/cancel`, {
+            method: "PATCH"
+        });
+
+        loadBookings();
+    }
+
+
+
+    // -------------------------------
+    // OPEN BOOKING DETAILS
+    // -------------------------------
+    function openBooking(id) {
+        window.location.href = `/booking/details?id=${id}`;
+    }
+
+    loadBookings();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Users</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+
+<body>
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/flights">Flights</a>
+            <a href="/admin/aircraft">Aircraft</a>
+            <a href="/admin/airports">Airports</a>
+            <a href="/admin/bookings">Bookings</a>
+            <a href="/admin/users" class="active">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Manage Users</h1>
+            <p>View users and assign roles.</p>
+        </header>
+
+        <section class="panel">
+            <h2>All Users</h2>
+
+            <table class="table" id="usersTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Assign Role</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="usersBody"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+    async function loadUsers() {
+        const users = await fetch('/users').then(r => r.json());
+        const roles = await fetch('/roles').then(r => r.json());
+        const body = document.getElementById("usersBody");
+
+        body.innerHTML = users.map(u => `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.firstName} ${u.lastName}</td>
+                <td>${u.email}</td>
+                <td>${u.roles.map(r => r.name).join(", ")}</td>
+
+                <td>
+                    <select onchange="assignRole(${u.id}, this.value)">
+                        <option value="">Add role…</option>
+                        ${roles.map(r => `<option value="${r.name}">${r.name}</option>`).join("")}
+                    </select>
+                </td>
+
+                <td>
+                    <button class="btn small delete" onclick="deleteUser(${u.id})">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    async function assignRole(userId, roleName) {
+        if (!roleName) return;
+        await fetch(`/users/${userId}/add-role?roleName=${roleName}`, { method: "POST" });
+        alert("Role added!");
+        loadUsers();
+    }
+
+    async function deleteUser(id) {
+        if (!confirm("Delete user?")) return;
+        await fetch(`/users/${id}`, { method: "DELETE" });
+        loadUsers();
+    }
+
+    loadUsers();
+</script>
+
+</body>
+</html>

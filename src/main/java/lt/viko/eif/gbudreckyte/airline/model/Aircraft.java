@@ -11,37 +11,17 @@ public class Aircraft {
     private Long id;
 
     private String model;
+
     private Integer capacity;
 
     public Aircraft() {}
 
-    public Aircraft(String model, Integer capacity) {
-        this.model = model;
-        this.capacity = capacity;
-    }
+    // Getters & setters
+    public Long getId() { return id; }
 
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
+    public String getModel() { return model; }
+    public void setModel(String model) { this.model = model; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
+    public Integer getCapacity() { return capacity; }
+    public void setCapacity(Integer capacity) { this.capacity = capacity; }
 }

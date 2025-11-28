@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/airline
+    username: postgres
+    password: yourPasswordHere
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 993317520698-1lif07ohaceruk43g5m0dplpv44b27lu.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+          github:
+            client-id: YOUR_GITHUB_CLIENT_ID
+            client-secret: YOUR_GITHUB_CLIENT_SECRET
+            scope:
+              - user:email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration

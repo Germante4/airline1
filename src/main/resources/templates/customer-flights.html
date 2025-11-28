@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Flights – Airway</title>
+    <link rel="stylesheet" href="/customer/customer.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">AIRWAY</div>
+
+    <nav>
+        <a href="/customer/dashboard">Home</a>
+        <a href="/customer/flights" class="active">Search Flights</a>
+        <a href="/customer/bookings">My Bookings</a>
+        <a href="/customer/profile">Profile</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </nav>
+</header>
+
+<section class="search-section">
+    <h1>Search Flights</h1>
+    <p>Find the best flights based on your departure, arrival, and travel date.</p>
+
+    <form id="searchForm" class="search-form">
+
+        <div class="search-field">
+            <label>Departure</label>
+            <select id="originSelect" required>
+                <option value="">Select Departure Airport</option>
+            </select>
+        </div>
+
+        <div class="search-field">
+            <label>Destination</label>
+            <select id="destinationSelect" required>
+                <option value="">Select Arrival Airport</option>
+            </select>
+        </div>
+
+        <div class="search-field">
+            <label>Date</label>
+            <input type="date" id="dateFilter">
+        </div>
+
+        <button type="submit" class="btn-primary big">Search Flights</button>
+    </form>
+</section>
+
+
+<!-- SEARCH RESULTS -->
+<section class="results-section">
+    <h2>Matching Flights</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Flight</th>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="searchResultsBody"></tbody>
+    </table>
+</section>
+
+
+<!-- UPCOMING FLIGHTS -->
+<section class="results-section">
+    <h2>Upcoming Flights</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Flight</th>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="upcomingBody"></tbody>
+    </table>
+</section>
+
+
+<script>
+    // ----------------------
+    // LOAD AIRPORT DROPDOWNS
+    // ----------------------
+    async function loadAirports() {
+        const airports = await fetch('/airport').then(r => r.json());
+
+        const options = airports.map(a =>
+            `<option value="${a.id}">${a.code} - ${a.city}</option>`
+        ).join("");
+
+        document.getElementById('originSelect').innerHTML += options;
+        document.getElementById('destinationSelect').innerHTML += options;
+    }
+
+    // ----------------------
+    // GET REMAINING TICKETS
+    // ----------------------
+    async function getRemainingTickets(flightId) {
+        return await fetch(`/tickets/remaining/${flightId}`).then(r => r.json());
+    }
+
+    // ----------------------
+    // BUILD TABLE ROW (ASYNC)
+    // ----------------------
+    async function buildFlightRowAsync(f) {
+        const remaining = await getRemainingTickets(f.id);
+
+        return `
+        <tr>
+            <td>${f.flightNumber}</td>
+            <td>${f.originAirport.code} → ${f.destinationAirport.code}</td>
+            <td>${f.departureTime}</td>
+            <td>${f.arrivalTime}</td>
+            <td>${f.status}</td>
+            <td>
+                <button class="btn-book" onclick="bookNow(${f.id})">Book Now</button>
+                <span style="color:red; margin-left:30px;">
+                    ${remaining} tickets left
+                </span>
+            </td>
+        </tr>
+    `;
+    }
+
+
+    // ----------------------
+    // RENDER ASYNC LIST
+    // ----------------------
+    async function renderFlightList(flights, elementId) {
+        const body = document.getElementById(elementId);
+
+        if (flights.length === 0) {
+            body.innerHTML = `<tr><td colspan="6" class="no-results">No flights found.</td></tr>`;
+            return;
+        }
+
+        let rows = "";
+        for (const f of flights) {
+            rows += await buildFlightRowAsync(f);
+        }
+        body.innerHTML = rows;
+    }
+
+    // ----------------------
+    // SEARCH RESULTS
+    // ----------------------
+    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const origin = document.getElementById('originSelect').value;
+        const dest = document.getElementById('destinationSelect').value;
+        const date = document.getElementById('dateFilter').value;
+
+        let flights = await fetch('/flights').then(r => r.json());
+
+        flights = flights.filter(f =>
+            f.originAirport.id == origin &&
+            f.destinationAirport.id == dest &&
+            (!date || f.departureTime.startsWith(date))
+        );
+
+        await renderFlightList(flights, "searchResultsBody");
+    });
+
+    // ----------------------
+    // UPCOMING FLIGHTS (8)
+    // ----------------------
+    async function loadUpcomingFlights() {
+        let flights = await fetch('/flights').then(r => r.json());
+
+        flights.sort((a, b) => new Date(a.departureTime) - new Date(b.departureTime));
+        flights = flights.slice(0, 8);
+
+        await renderFlightList(flights, "upcomingBody");
+    }
+
+    // ----------------------
+    // BOOK NOW
+    // ----------------------
+    function bookNow(flightId) {
+        window.location.href = "/customer/book?flightId=" + flightId;
+    }
+
+    // INIT
+    loadAirports();
+    loadUpcomingFlights();
+</script>
+
+
+</body>
+</html>

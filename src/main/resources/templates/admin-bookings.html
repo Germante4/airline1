@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Bookings</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/flights">Flights</a>
+            <a href="/admin/aircraft">Aircraft</a>
+            <a href="/admin/airports">Airports</a>
+            <a href="/admin/bookings" class="active">Bookings</a>
+            <a href="/admin/users">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Manage Bookings</h1>
+            <p>View and control all customer bookings.</p>
+        </header>
+
+
+        <!-- BOOKINGS LIST -->
+        <section class="panel">
+            <h2>All Bookings</h2>
+
+            <table class="table" id="bookingsTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Tickets</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="bookingsBody">
+                <!-- JS loads rows -->
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+    // Load all bookings
+    async function loadBookings() {
+        const list = await fetch('/bookings').then(r => r.json());
+
+        document.getElementById("bookingsBody").innerHTML = list.map(b => `
+            <tr>
+                <td>${b.id}</td>
+                <td>${b.user.firstName} ${b.user.lastName} <br>
+                    <small>${b.user.email}</small>
+                </td>
+
+                <td>${b.status}</td>
+
+                <td>${b.createdAt}</td>
+
+                <td>
+                    ${b.bookedTickets.length === 0
+            ? "<i>No tickets</i>"
+            : b.bookedTickets.map(bt =>
+                `Ticket #${bt.ticket.id} – Seat ${bt.ticket.seatNumber}`
+            ).join("<br>")
+        }
+                </td>
+
+                <td>
+                    <button class="btn small" onclick="updateStatus(${b.id})">Update</button>
+                    <button class="btn delete small" onclick="deleteBooking(${b.id})">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    // UPDATE BOOKING STATUS
+    async function updateStatus(id) {
+        const newStatus = prompt("Enter new status: pending / confirmed / cancelled");
+
+        if (!newStatus) return;
+
+        await fetch(`/bookings/admin/${id}?status=${newStatus}`, { method: "PATCH" });
+
+        loadBookings();
+    }
+
+    // DELETE BOOKING
+    async function deleteBooking(id) {
+        if (!confirm("Delete booking?")) return;
+
+        await fetch(`/bookings/admin/${id}`, { method: 'DELETE' });
+
+        loadBookings();
+    }
+
+    loadBookings();
+</script>
+
+</body>
+</html>

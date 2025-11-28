@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Flights</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/flights" class="active">Flights</a>
+            <a href="/admin/aircraft">Aircraft</a>
+            <a href="/admin/airports">Airports</a>
+            <a href="/admin/bookings">Bookings</a>
+            <a href="/admin/users">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Manage Flights</h1>
+            <p>Create, update and delete scheduled flights.</p>
+        </header>
+
+        <!-- CREATE FLIGHT FORM -->
+        <section class="panel">
+            <h2>Create New Flight</h2>
+
+            <form id="createFlightForm" class="form-grid">
+                <input type="text" id="flightNumber" placeholder="Flight Number" required>
+
+                <select id="aircraftSelect">
+                    <option value="" disabled selected>Select Aircraft</option>
+                </select>
+                <select id="originSelect">
+                    <option value="" disabled selected>Select Origin Airport</option>
+                </select>
+                <select id="destinationSelect">
+                    <option value="" disabled selected>Select Destination Airport</option>
+                </select>
+
+
+                <input type="datetime-local" id="departureTime" required>
+                <input type="datetime-local" id="arrivalTime" required>
+
+                <select id="statusSelect">
+                    <option value="" disabled selected>Select Status</option>
+                    <option>Scheduled</option>
+                    <option>Boarding</option>
+                    <option>Departed</option>
+                    <option>Delayed</option>
+                    <option>Cancelled</option>
+                </select>
+
+                <button type="submit" class="btn primary">Create Flight</button>
+            </form>
+        </section>
+
+
+        <!-- CURRENT FLIGHTS LIST -->
+        <section class="panel">
+            <h2>Current Flights</h2>
+
+            <table class="table" id="flightsTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Flight</th>
+                    <th>Route</th>
+                    <th>Times</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="flightsBody">
+                <!-- JS will insert rows here -->
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+    // ---------------------
+    // LOAD SELECT OPTIONS
+    // ---------------------
+    async function loadDropdowns() {
+        const aircraft = await fetch('/aircraft').then(r => r.json());
+        const airports = await fetch('/airport').then(r => r.json());
+
+        document.getElementById("aircraftSelect").innerHTML +=
+            aircraft.map(a => `<option value="${a.id}">${a.model}</option>`).join("");
+
+        document.getElementById("originSelect").innerHTML +=
+            airports.map(a => `<option value="${a.id}">${a.code} - ${a.city}</option>`).join("");
+
+        document.getElementById("destinationSelect").innerHTML +=
+            airports.map(a => `<option value="${a.id}">${a.code} - ${a.city}</option>`).join("");
+    }
+
+    // ---------------------
+    // LOAD ALL FLIGHTS
+    // ---------------------
+    async function loadFlights() {
+        const flights = await fetch('/flights').then(r => r.json());
+        const body = document.getElementById("flightsBody");
+
+        body.innerHTML = flights.map(f => `
+        <tr>
+            <td>${f.id}</td>
+            <td>${f.flightNumber}</td>
+            <td>${f.originAirport.code} → ${f.destinationAirport.code}</td>
+            <td>
+                ${f.departureTime}<br>${f.arrivalTime}
+            </td>
+            <td>${f.status}</td>
+
+            <td>
+                <button onclick="openUpdate(${f.id})" class="btn small">Update</button>
+                <button onclick="deleteFlight(${f.id})" class="btn delete small">Delete</button>
+            </td>
+        </tr>
+    `).join("");
+    }
+
+    // ---------------------
+    // CREATE FLIGHT
+    // ---------------------
+    document.getElementById("createFlightForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const dto = {
+            flightNumber: document.getElementById("flightNumber").value,
+            aircraftId: document.getElementById("aircraftSelect").value,
+            originAirportId: document.getElementById("originSelect").value,
+            destinationAirportId: document.getElementById("destinationSelect").value,
+            departureTime: document.getElementById("departureTime").value.replace("T", " "),
+            arrivalTime: document.getElementById("arrivalTime").value.replace("T", " "),
+            status: document.getElementById("statusSelect").value
+        };
+
+        await fetch('/flights/admin', {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(dto)
+        });
+
+        loadFlights();
+        alert("Flight created!");
+    });
+
+    // ---------------------
+    // DELETE FLIGHT
+    // ---------------------
+    async function deleteFlight(id) {
+        if (!confirm("Delete this flight?")) return;
+
+        await fetch(`/flights/admin/${id}`, { method: 'DELETE' });
+
+        loadFlights();
+    }
+
+    // ---------------------
+    // UPDATE FLIGHT PAGE
+    // ---------------------
+    function openUpdate(id) {
+        window.location.href = `/flights/update?id=${id}`;
+    }
+
+    // INIT PAGE
+    loadDropdowns();
+    loadFlights();
+</script>
+
+</body>
+</html>

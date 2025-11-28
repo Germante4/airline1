@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Aircraft</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">AIRWAY</h2>
+
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/flights">Flights</a>
+            <a href="/admin/aircraft" class="active">Aircraft</a>
+            <a href="/admin/airports">Airports</a>
+            <a href="/admin/bookings">Bookings</a>
+            <a href="/admin/users">Users</a>
+        </nav>
+
+        <div class="logout-box">
+            <a class="logout-btn" href="/logout">Logout</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Manage Aircraft</h1>
+            <p>Create, update and delete aircraft.</p>
+        </header>
+
+        <!-- CREATE / UPDATE FORM -->
+        <section class="panel">
+            <h2>Add or Edit Aircraft</h2>
+
+            <form id="aircraftForm" class="form-grid">
+
+                <input type="hidden" id="aircraftId">
+
+                <input type="text" id="model" placeholder="Aircraft Model" required>
+                <input type="number" id="capacity" placeholder="Capacity" required>
+
+                <button type="submit" class="btn primary">Save Aircraft</button>
+            </form>
+        </section>
+
+        <!-- TABLE -->
+        <section class="panel">
+            <h2>All Aircraft</h2>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Model</th>
+                    <th>Capacity</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="aircraftTableBody">
+                <!-- JS inserts rows -->
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+
+<script>
+    const API = "/aircraft";
+
+    // Load all aircraft
+    async function loadAircraft() {
+        const list = await fetch(API).then(r => r.json());
+        const body = document.getElementById("aircraftTableBody");
+
+        body.innerHTML = list.map(a => `
+            <tr>
+                <td>${a.id}</td>
+                <td>${a.model}</td>
+                <td>${a.capacity}</td>
+                <td>
+                    <button class="btn small" onclick="editAircraft(${a.id})">Update</button>
+                    <button class="btn delete small" onclick="deleteAircraft(${a.id})">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    // Put aircraft data into form for edit
+    async function editAircraft(id) {
+        const a = await fetch(`${API}/${id}`).then(r => r.json());
+
+        document.getElementById("aircraftId").value = a.id;
+        document.getElementById("model").value = a.model;
+        document.getElementById("capacity").value = a.capacity;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Delete aircraft
+    async function deleteAircraft(id) {
+        if (!confirm("Delete this aircraft?")) return;
+
+        await fetch(`${API}/admin/${id}`, { method: "DELETE" });
+        loadAircraft();
+    }
+
+    // Create / update form handler
+    document.getElementById("aircraftForm").addEventListener("submit", async e => {
+        e.preventDefault();
+
+        const id = document.getElementById("aircraftId").value;
+
+        const payload = {
+            model: document.getElementById("model").value,
+            capacity: Number(document.getElementById("capacity").value)
+        };
+
+        if (id) {
+            await fetch(`${API}/admin/${id}`, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+        } else {
+            await fetch(`${API}/admin`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+        }
+
+        document.getElementById("aircraftForm").reset();
+        document.getElementById("aircraftId").value = "";
+        loadAircraft();
+    });
+
+    loadAircraft();
+</script>
+
+</body>
+</html>
