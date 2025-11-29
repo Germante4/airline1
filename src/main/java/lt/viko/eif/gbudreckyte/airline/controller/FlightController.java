@@ -72,14 +72,16 @@ public class FlightController {
         flight.setArrivalTime(dto.arrivalTime);
         flight.setStatus(dto.status);
 
-        // 1️⃣ First save flight
+        // 1️⃣ Save flight first
         Flight saved = flightRepository.save(flight);
 
-        // 2️⃣ Then generate tickets for it
+        // 2️⃣ Generate tickets based on aircraft capacity
         ticketService.generateTicketsForFlight(saved);
+
 
         return saved;
     }
+
 
     // --------------------
     // ADMIN — UPDATE

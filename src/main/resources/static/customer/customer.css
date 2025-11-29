@@ -218,6 +218,127 @@ body {
 .btn-book:hover {
     background: #155BB5;
 }
+/* MODAL BACKDROP */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+/* MODAL BOX */
+.modal-content {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.25s ease-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* CLOSE BUTTON */
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* BUTTONS IN MODAL */
+.modal-btn {
+    display: block;
+    width: 100%;
+    margin: 10px auto;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* POPUP ANIMATION */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+/* MODAL BACKDROP */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+/* MODAL BOX */
+.modal-content {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.25s ease-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* CLOSE BUTTON */
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* BUTTONS IN MODAL */
+.modal-btn {
+    display: block;
+    width: 100%;
+    margin: 10px auto;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* POPUP ANIMATION */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
 
 .cards { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; }
 .card { background: white; width: 280px; padding: 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; } .card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.1); } .card h3 { margin-bottom: 10px; }

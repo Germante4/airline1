@@ -3,43 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <title>Airway</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/customer/customer.css">
 </head>
 
 <body>
 
-<nav class="navbar">
-    <div class="logo">✈ Airway</div>
-    <div class="nav-links">
-        <a href="/oauth2/authorization/google" class="btn small">Google Login</a>
-        <a href="/oauth2/authorization/github" class="btn small dark">GitHub Login</a>
-    </div>
-</nav>
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">AIRWAY</div>
 
-<header class="hero">
-    <div class="hero-content">
-        <h1>Your Journey Begins Here</h1>
-        <p>Fast, simple and secure flight booking.</p>
-
-    </div>
+    <nav>
+        <a onclick="openLoginModal()" class="btn small">Login</a>
+        <a onclick="openLoginModal()" class="btn small dark">Sign Up</a>
+    </nav>
 </header>
 
-<section class="features">
-    <div class="feature">
-        <h3>🛫 Book Flights</h3>
-        <p>Quickly browse, choose and book your flights.</p>
-    </div>
 
-    <div class="feature">
-        <h3>👤 Manage Profile</h3>
-        <p>Access your booking history and personal details.</p>
-    </div>
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <h1>Your Journey Begins Here</h1>
+        <p>Login or sign up to start searching for flights.</p>
 
-    <div class="feature">
-        <h3>🛄 Real-Time Updates</h3>
-        <p>Track status and updates in one convenient place.</p>
+        <a onclick="openLoginModal()" class="cta-btn">
+            Login / Sign Up
+        </a>
     </div>
 </section>
+
+
+<!-- FEATURES SECTION -->
+<section class="features">
+    <div class="cards">
+
+        <div class="card">
+            <h3>Book Flights</h3>
+            <p>Quickly browse, choose and book your flights.</p>
+        </div>
+
+        <div class="card">
+            <h3>Manage Profile</h3>
+            <p>Access your booking history and personal details.</p>
+        </div>
+
+        <div class="card">
+            <h3>Real-Time Updates</h3>
+            <p>Track flight status and updates in one place.</p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeLoginModal()">&times;</span>
+        <h2>Login to Airway</h2>
+        <p>Select a login method:</p>
+
+        <button class="btn modal-btn" onclick="openOAuthPopup('/oauth2/authorization/google')">
+            Login with Google
+        </button>
+
+        <button class="btn modal-btn dark" onclick="openOAuthPopup('/oauth2/authorization/github')">
+            Login with GitHub
+        </button>
+    </div>
+</div>
+
+
+<!-- JS (Modal + OAuth popup) -->
+<script>
+    function openLoginModal() {
+        document.getElementById("loginModal").style.display = "flex";
+    }
+
+    function closeLoginModal() {
+        document.getElementById("loginModal").style.display = "none";
+    }
+
+    // Uždaryti modalą paspaudus ant overlay
+    window.onclick = function(event) {
+        const modal = document.getElementById("loginModal");
+        if (event.target === modal) {
+            closeLoginModal();
+        }
+    }
+
+    // OAuth mažas popup
+    function openOAuthPopup(url) {
+        const width = 500;
+        const height = 650;
+        const left = (screen.width - width) / 2;
+        const top = (screen.height - height) / 2;
+
+        window.open(
+            url,
+            "oauthLogin",
+            `width=${width},height=${height},top=${top},left=${left},resizable=no`
+        );
+    }
+</script>
+
 
 <footer class="footer">
     © 2025 Airway. All rights reserved.
