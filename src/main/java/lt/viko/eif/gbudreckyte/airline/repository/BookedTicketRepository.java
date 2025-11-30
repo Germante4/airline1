@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BookedTicketRepository extends JpaRepository<BookedTicket, Long> {
+
     int countByTicket_Flight_Id(Long flightId);
 
-    @Query("SELECT bt.ticket.id FROM BookedTicket bt WHERE bt.ticket.flight.id = :flightId")
-    List<Long> findTicketIdsByFlight(@Param("flightId") Long flightId);
+    List<BookedTicket> findByTicket_Flight_Id(Long flightId);
 }

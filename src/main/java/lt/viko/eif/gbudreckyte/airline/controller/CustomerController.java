@@ -25,4 +25,9 @@ public class CustomerController {
     public String profile() {
         return "customer-profile.html";
     }
+
+    @GetMapping("customer/book")
+    public String book() {
+        return "customer-book.html";
+    }
 }
